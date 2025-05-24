@@ -163,6 +163,23 @@ const excel_file_import = async (req, res) => {
       });
     }
 
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext !== '.xlsx') {
+      fs.unlinkSync(file.path);
+      return res.status(400).json({
+        success: false,
+        error: "Only .xlsx files are allowed.",
+      });
+    }
+
+    if (file.mimetype !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      fs.unlinkSync(file.path);
+      return res.status(400).json({
+        success: false,
+        error: "Invalid MIME type. Only .xlsx files are accepted.",
+      });
+    }
+
     const fileExists = await checkIfFileExists(file.originalname);
     if (fileExists) {
       fs.unlinkSync(file.path);

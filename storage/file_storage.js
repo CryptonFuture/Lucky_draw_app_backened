@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (req, file, callback) => {
+const fileFilter = (req, res, file, callback) => {
   if (
     file.mimetype ===
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
