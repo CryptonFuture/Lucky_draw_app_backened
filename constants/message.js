@@ -1,0 +1,1 @@
+exports.EXCEL_DATE_SUCCESSFULLY_UPLOAD = 'excel data successfully upload'
