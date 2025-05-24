@@ -1,14 +1,14 @@
 const express = require("express");
 const ExcelFileImportController = require("../controllers/Excel_File_Import_Controller");
-const upload = require("../storage/file_storage");
-const fileUpload = require('express-fileupload')
+const fileUploads = require("../storage/file_storage");
+// const fileUpload = require('express-fileupload')
 const uploadOtps = require('../storage/file_upload')
 
 const router = express.Router();
 
 router.post(
   "/excel_file_import",
-  upload.single('excel'),
+  fileUploads.single('excel'),
   ExcelFileImportController.excel_file_import
 );
 
