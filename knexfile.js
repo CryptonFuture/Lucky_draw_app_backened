@@ -6,13 +6,7 @@ const { dbConfig } = require('./config')
 module.exports = {
   development: {
     client: "mysql2",
-    connection: {
-      host: 'localhost',
-      port: 3306,
-      user: 'root',
-      password: '',
-      database: 'lucky_draw',
-    },
+    connection: dbConfig.connection,
     pool: {
       min: 2,
       max: 10,
@@ -28,13 +22,7 @@ module.exports = {
 
   staging: {
     client: "mysql2",
-    connection: {
-      host: 'localhost',
-      port: 3306,
-      user: 'root',
-      password: '',
-      database: 'lucky_draw',
-    },
+    connection: dbConfig.connection,
     pool: {
       min: 2,
       max: 10,
@@ -50,13 +38,7 @@ module.exports = {
 
   production: {
     client: "mysql2",
-    connection: {
-        host: 'localhost',
-      port: 3306,
-      user: 'root',
-      password: '',
-      database: 'lucky_draw',
-    },
+    connection: dbConfig.connection,
     pool: {
       min: 2,
       max: 10,
