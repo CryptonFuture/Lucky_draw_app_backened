@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (req, res, file, callback) => {
+const fileFilter = (req, file, callback) => {
   if (
     file.mimetype ===
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -33,7 +33,7 @@ const fileFilter = (req, res, file, callback) => {
   }
 };
 
-const maxSize = 10 * 1024 * 1024; 
+const maxSize = 10 * 1024 * 1024; // 10MB
 
 const fileUploads = multer({
   storage: storage,

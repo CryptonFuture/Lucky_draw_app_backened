@@ -51,8 +51,8 @@ const saveFileInfo = async (fileName) => {
   await knex("uploaded_files").insert({ file_name: fileName });
 };
 
-const checkIfRecordExists = async (transactionId) => {
-  const result = await knex("employees").where({ Transactionid: transactionId }).first();
+const checkIfRecordExists = async (id) => {
+  const result = await knex("employees").where({ id: id }).first();
   return result ? true : false;
 };
 

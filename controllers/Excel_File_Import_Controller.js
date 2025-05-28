@@ -22,136 +22,6 @@ const {
 } = require("../constants/error");
 const { EXCEL_DATE_SUCCESSFULLY_UPLOAD } = require("../constants/message");
 
-// const excel_file_import = async (req, res) => {
-//   try {
-//     const { excel } = req.files;
-//     if (
-//       excel.mimetype !==
-//       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-//     ) {
-//       return res.status(400).json({
-//         success: false,
-//         error: FILE_INVALID,
-//       });
-//     }
-
-//     const fileExists = await checkIfFileExists(excel.name);
-//     if (fileExists) {
-//       return res.status(400).json({
-//         success: false,
-//         error: "This file has already been uploaded.",
-//       });
-//     }
-
-//     const workbook = XLSX.readFile("Test data.xlsx");
-//     const sheetName = workbook.SheetNames[0];
-//     const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
-//     const successData = [];
-
-//     for (let i = 0; i < data.length; i++) {
-//       const {
-//         EmployeesName,
-//         Division,
-//         Module
-//       } = data[i];
-
-//       await createExcelFile({
-//         EmployeesName,
-//         Division,
-//         Module
-//       });
-
-//       successData.push(data[i]);
-//     }
-
-//     await saveFileInfo(excel.name);
-
-//     return res.status(200).json({
-//       success: true,
-//       message: EXCEL_DATE_SUCCESSFULLY_UPLOAD,
-//       data: successData,
-//     });
-//   } catch (error) {
-//     console.log(error);
-
-//     return res.json({
-//       success: false,
-//       error: INTERNAL_SERVER_ERROR,
-//     });
-//   }
-// };
-
-
-
-// const excel_file_import = async (req, res) => {
-//   try {
-//     const { excel } = req.files;
-
-//     if (
-//       excel.mimetype !==
-//       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-//     ) {
-//       return res.status(400).json({
-//         success: false,
-//         error: FILE_INVALID,
-//       });
-//     }
-
-//     const fileExists = await checkIfFileExists(excel.name);
-//     if (fileExists) {
-//       return res.status(400).json({
-//         success: false,
-//         error: "This file has already been uploaded.",
-//       });
-//     }
-
-//     const uploadDir = path.join(__dirname, "uploads");
-//     if (!fs.existsSync(uploadDir)) {
-//       fs.mkdirSync(uploadDir);
-//     }
-
-//     const tempFilePath = path.join(uploadDir, excel.name);
-//     await excel.mv(tempFilePath); 
-
-//     const workbook = XLSX.readFile(tempFilePath);
-//     const sheetName = workbook.SheetNames[0];
-//     const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
-//     const successData = [];
-
-//     for (let i = 0; i < data.length; i++) {
-//       const { EmployeesName, Division, Module } = data[i];
-
-//       await createExcelFile({
-//         EmployeesName,
-//         Division,
-//         Module,
-//       });
-
-//       successData.push(data[i]);
-//     }
-
-//     await saveFileInfo(excel.name);
-
-//     fs.unlinkSync(tempFilePath);
-
-//     return res.status(200).json({
-//       success: true,
-//       message: EXCEL_DATE_SUCCESSFULLY_UPLOAD,
-//       data: successData,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({
-//       success: false,
-//       error: INTERNAL_SERVER_ERROR,
-//     });
-//   }
-// };
-
-
-
 const excel_file_import = async (req, res) => {
   try {
     const file = req.file;
@@ -160,23 +30,6 @@ const excel_file_import = async (req, res) => {
       return res.status(400).json({
         success: false,
         error: "No file uploaded or invalid file type.",
-      });
-    }
-
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (ext !== '.xlsx') {
-      fs.unlinkSync(file.path);
-      return res.status(400).json({
-        success: false,
-        error: "Only .xlsx files are allowed.",
-      });
-    }
-
-    if (file.mimetype !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-      fs.unlinkSync(file.path);
-      return res.status(400).json({
-        success: false,
-        error: "Invalid MIME type. Only .xlsx files are accepted.",
       });
     }
 
@@ -192,6 +45,21 @@ const excel_file_import = async (req, res) => {
     const workbook = XLSX.readFile(file.path);
     const sheetName = workbook.SheetNames[0];
     const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+    const requiredHeaders = ['EmployeesName', 'Division', 'Module'];
+    const fileHeaders = Object.keys(data[0] || {});
+
+    const missingHeaders = requiredHeaders.filter(
+      (header) => !fileHeaders.includes(header)
+    );
+
+    if (missingHeaders.length > 0) {
+      fs.unlinkSync(file.path);
+      return res.status(400).json({
+        success: false,
+        error: `Missing required column(s): ${missingHeaders.join(', ')}`,
+      });
+    }
 
     const successData = [];
 
